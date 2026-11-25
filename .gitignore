@@ -1,0 +1,25 @@
+# --- secrets (copy the *.example files instead) ---
+firmware/esp32_gateway/secrets.h
+server/.env
+
+# --- Python ---
+.venv/
+__pycache__/
+*.pyc
+
+# --- runtime data ---
+backend/data/
+*.db
+
+# --- Arduino build output ---
+build/
+*.bin
+*.elf
+*.hex
+
+# --- editors / OS ---
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+.DS_Store

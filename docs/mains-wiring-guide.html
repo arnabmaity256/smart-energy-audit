@@ -1,0 +1,466 @@
+<title>PZEM Mains Hookup</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: single technical-sheet column; one large wiring drawing, then reference tables and a tickable procedure. */
+:root {
+  --bg: #f4f6f8; --surface: #ffffff; --surface2: #eef1f4; --ink: #1a1f24; --muted: #56616d; --line: #d3dae1;
+  --accent: #1f5fbf;
+  --danger: #c2410c; --danger-tint: #fdf1ea; --danger-hatch: #f5d9c8;
+  --safe: #0f766e; --safe-tint: #e4f4f1;
+  --pcb: #1f6b45; --pcb-ink: #eaf7ee; --uno: #0e7490; --uno-ink: #f0fbff;
+  --term: #2563eb; --screw: #cbd5e1; --screw-ink: #1a1f24; --core-ink: #ffffff;
+  --sheath: #a3acb6; --ct: #1a1f24; --bulb: #fde68a; --grommet: #475569;
+  --w-live: #8a4b1e; --w-neutral: #2563eb; --w-earth-g: #16a34a; --w-earth-y: #eab308;
+  --lv-5v: #dc2626; --lv-gnd: #1a1f24; --lv-rx: #7c3aed; --lv-tx: #ca8a04;
+  --display: "Barlow Semi Condensed", "Arial Narrow", system-ui, sans-serif;
+  --body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111418; --surface: #181c21; --surface2: #20262d; --ink: #e6e9ed; --muted: #9aa5b1; --line: #2e353d;
+  --accent: #6aa1ff; --danger: #fb8a3c; --danger-tint: #24170f; --danger-hatch: #3a2418;
+  --safe: #2dd4bf; --safe-tint: #0f2a27; --pcb: #1c5a3a; --pcb-ink: #e3f4e8; --uno: #0f5f73; --uno-ink: #e6f6fa;
+  --sheath: #6b7580; --ct: #e5e7eb; --grommet: #94a3b8;
+  --w-live: #c0773f; --w-neutral: #5b8def; --w-earth-g: #22a04a; --w-earth-y: #e3c63a;
+  --lv-5v: #f05252; --lv-gnd: #d1d5db; --lv-rx: #a78bfa; --lv-tx: #e3b341;
+  color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #111418; --surface: #181c21; --surface2: #20262d; --ink: #e6e9ed; --muted: #9aa5b1; --line: #2e353d;
+  --accent: #6aa1ff; --danger: #fb8a3c; --danger-tint: #24170f; --danger-hatch: #3a2418;
+  --safe: #2dd4bf; --safe-tint: #0f2a27; --pcb: #1c5a3a; --pcb-ink: #e3f4e8; --uno: #0f5f73; --uno-ink: #e6f6fa;
+  --sheath: #6b7580; --ct: #e5e7eb; --grommet: #94a3b8;
+  --w-live: #c0773f; --w-neutral: #5b8def; --w-earth-g: #22a04a; --w-earth-y: #e3c63a;
+  --lv-5v: #f05252; --lv-gnd: #d1d5db; --lv-rx: #a78bfa; --lv-tx: #e3b341;
+  color-scheme: dark }
+
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.page { max-width: 1000px; margin: 0 auto; padding-block: 40px 64px; display: grid; gap: 44px; }
+h1, h2, h3 { font-family: var(--display); font-weight: 700; line-height: 1.15; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(2rem, 5vw, 2.9rem); letter-spacing: .01em; }
+h2 { font-size: 1.55rem; }
+h3 { font-size: 1.15rem; }
+p { margin: 0; }
+.eyebrow { font-family: var(--mono); font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.lead { max-width: 65ch; color: var(--muted); font-size: 1.05rem; }
+header { display: grid; gap: 12px; }
+section { display: grid; gap: 16px; min-width: 0; }
+.section-head { display: grid; gap: 6px; }
+.section-head p { color: var(--muted); max-width: 65ch; }
+code, .mono { font-family: var(--mono); font-size: .9em; }
+
+.warning { display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: start; padding: 16px 18px;
+  background: var(--danger-tint); border: 1.5px solid var(--danger); border-radius: 10px; }
+.warning .sign { width: 34px; height: 30px; }
+.warning strong { color: var(--danger); font-family: var(--display); font-size: 1.15rem; letter-spacing: .02em; }
+.warning ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 2px; }
+
+figure { margin: 0; display: grid; gap: 10px; min-width: 0; }
+.drawing { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px; overflow-x: auto; }
+.drawing svg { display: block; width: 100%; height: auto; min-width: 760px; }
+.drawing.small svg { min-width: 520px; }
+figcaption { color: var(--muted); font-size: .9rem; max-width: 75ch; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 18px; font-family: var(--mono); font-size: .8rem; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 7px; }
+.sw { width: 22px; height: 6px; border-radius: 3px; display: inline-block; }
+.sw.earth { background: repeating-linear-gradient(90deg, var(--w-earth-g) 0 6px, var(--w-earth-y) 6px 12px); }
+.sw.zone { width: 16px; height: 12px; border: 1.5px dashed var(--danger);
+  background: repeating-linear-gradient(45deg, var(--danger-tint) 0 4px, var(--danger-hatch) 4px 7px); }
+
+/* svg styling */
+svg text { font-family: var(--mono); font-size: 12px; fill: var(--ink); }
+svg .sm { font-size: 11px; }
+svg .b { font-weight: 600; }
+svg .muted { fill: var(--muted); }
+svg .danger { fill: var(--danger); font-weight: 600; }
+svg .safe { fill: var(--safe); font-weight: 600; }
+svg .on-pcb { fill: var(--pcb-ink); }
+svg .on-uno { fill: var(--uno-ink); }
+svg .on-screw { fill: var(--screw-ink); font-weight: 600; font-size: 11px; }
+svg .on-core { fill: var(--core-ink); font-weight: 600; font-size: 11px; }
+svg .mid { text-anchor: middle; }
+svg .end { text-anchor: end; }
+.wire { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.w-live { stroke: var(--w-live); }
+.w-neutral { stroke: var(--w-neutral); }
+.w-earth-g { stroke: var(--w-earth-g); }
+.w-earth-y { stroke: var(--w-earth-y); stroke-dasharray: 6 6; stroke-linecap: butt; }
+.core { stroke-width: 5; }
+.tap { stroke-width: 4; }
+.lv { stroke-width: 3; }
+.lv-5v { stroke: var(--lv-5v); } .lv-gnd { stroke: var(--lv-gnd); } .lv-rx { stroke: var(--lv-rx); } .lv-tx { stroke: var(--lv-tx); }
+.ct-lead { stroke: var(--ct); stroke-width: 2; fill: none; }
+.ct-ring { stroke: var(--ct); stroke-width: 6; fill: none; }
+.f-surface { fill: var(--surface); } .f-surface2 { fill: var(--surface2); } .f-sheath { fill: var(--sheath); }
+.f-pcb { fill: var(--pcb); } .f-uno { fill: var(--uno); } .f-term { fill: var(--term); } .f-screw { fill: var(--screw); }
+.f-ink { fill: var(--ink); } .f-bulb { fill: var(--bulb); } .f-grommet { fill: var(--grommet); }
+.f-live { fill: var(--w-live); } .f-neutral { fill: var(--w-neutral); } .f-earth { fill: var(--w-earth-g); }
+.s-ink { stroke: var(--ink); stroke-width: 1.5; }
+.s-line { stroke: var(--line); stroke-width: 1.5; }
+.encl { stroke: var(--danger); stroke-width: 2; stroke-dasharray: 8 5; stroke-linejoin: round; }
+.iso { stroke: var(--pcb-ink); stroke-width: 1.5; stroke-dasharray: 4 4; }
+.hatch-bg { fill: var(--danger-tint); } .hatch-line { stroke: var(--danger-hatch); stroke-width: 3; }
+
+/* tables */
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: .93rem; }
+th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+th { font-family: var(--mono); font-size: .74rem; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); font-weight: 500; background: var(--surface2); }
+td .chip { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+.dot { width: 14px; height: 14px; border-radius: 50%; display: inline-block; border: 1px solid var(--line); flex: none; }
+.ok { color: var(--safe); font-weight: 600; } .bad { color: var(--danger); font-weight: 600; }
+
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+.grid2 > * { min-width: 0; }
+
+/* procedure */
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; counter-reset: step; }
+.steps li { counter-increment: step; display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: start;
+  padding: 14px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+.steps input { appearance: none; width: 26px; height: 26px; margin: 2px 0 0; border: 2px solid var(--line); border-radius: 7px;
+  display: grid; place-items: center; cursor: pointer; background: var(--surface2); font-family: var(--mono); font-size: .8rem; color: var(--muted); }
+.steps input::before { content: counter(step); font-weight: 600; }
+.steps input:checked { background: var(--safe); border-color: var(--safe); }
+.steps input:checked::before { content: "✓"; color: var(--surface); }
+.steps input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.steps label { cursor: pointer; display: grid; gap: 3px; }
+.steps label b { font-weight: 600; }
+.steps label span { color: var(--muted); font-size: .93rem; }
+.steps li:has(input:checked) label b { text-decoration: line-through; text-decoration-color: var(--muted); }
+.progress { font-family: var(--mono); font-size: .85rem; color: var(--muted); }
+.reset { justify-self: start; font: inherit; font-family: var(--mono); font-size: .8rem; color: var(--accent); background: none; border: 1px solid var(--line); border-radius: 6px; padding: 4px 10px; cursor: pointer; }
+.reset:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+pre { margin: 0; padding: 14px 16px; background: var(--surface2); border: 1px solid var(--line); border-radius: 10px; overflow-x: auto;
+  font-family: var(--mono); font-size: .86rem; line-height: 1.7; }
+.callout { padding: 14px 16px; border-left: 4px solid var(--safe); background: var(--safe-tint); border-radius: 0 10px 10px 0; }
+footer { color: var(--muted); font-size: .88rem; border-top: 1px solid var(--line); padding-top: 18px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="page">
+  <header>
+    <div class="eyebrow">Smart Energy Audit · Stage C · 230 V AC</div>
+    <h1>PZEM Mains Hookup</h1>
+    <p class="lead">How to connect the PZEM-004T v3.0 to mains through an extension board without cutting any conductor. The load current keeps flowing through the board as usual. The CT clamp only sits around the live core, and two fused tap wires give the PZEM its voltage.</p>
+  </header>
+
+  <div class="warning" role="note">
+    <svg class="sign" viewBox="0 0 34 30" aria-hidden="true"><path d="M17 2 L32 28 H2 Z" fill="var(--danger)"/><path d="M18.5 8 L13 17 H17 L15.5 24 L21.5 14 H17.5 Z" fill="var(--surface)"/></svg>
+    <div>
+      <strong>230 V can kill. Work only with a lab instructor present.</strong>
+      <ul>
+        <li>Everything stays <b>unplugged</b> while you wire, measure or change anything.</li>
+        <li>Plug in only after the instructor has inspected the closed enclosure.</li>
+        <li>Use a socket protected by an <b>RCCB/ELCB</b>, and never touch the PZEM board while it is plugged in.</li>
+      </ul>
+    </div>
+  </div>
+
+  <section>
+    <div class="section-head">
+      <h2>The complete setup</h2>
+      <p>Everything inside the hatched outline is at mains potential and lives inside the closed plastic enclosure. Only the four low-voltage TTL wires leave it.</p>
+    </div>
+    <figure>
+      <div class="drawing">
+        <svg viewBox="0 0 960 530" role="img" aria-label="Wiring diagram: wall socket to extension cord, sheath stripped inside the enclosure with a CT clamp on the live core, fused tap wires from the extension board's L and N terminals to the PZEM, and four TTL wires from the PZEM to the Arduino Uno.">
+          <defs>
+            <pattern id="hatch" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+              <rect width="10" height="10" class="hatch-bg"/>
+              <line x1="0" y1="0" x2="0" y2="10" class="hatch-line"/>
+            </pattern>
+          </defs>
+
+          <!-- enclosure (mains zone) -->
+          <path d="M228 28 H418 V270 H840 V500 H228 Z" fill="url(#hatch)" class="encl"/>
+          <text x="832" y="298" class="end danger">MAINS 230 V</text>
+          <text x="832" y="490" class="end danger sm">closed plastic enclosure</text>
+
+          <!-- wall socket -->
+          <text x="60" y="70" class="mid b">Wall socket</text>
+          <rect x="20" y="80" width="80" height="90" rx="8" class="f-surface s-ink"/>
+          <circle cx="46" cy="138" r="5" class="f-ink"/><circle cx="74" cy="138" r="5" class="f-ink"/><circle cx="60" cy="108" r="7" class="f-ink"/>
+          <text x="60" y="188" class="mid muted sm">MCB + RCCB</text>
+          <rect x="94" y="104" width="20" height="32" rx="4" class="f-ink"/>
+
+          <!-- cord sheath bands -->
+          <rect x="112" y="102" width="140" height="36" rx="18" class="f-sheath"/>
+          <rect x="378" y="102" width="182" height="36" rx="18" class="f-sheath"/>
+          <text x="170" y="94" class="mid muted sm">extension cord</text>
+
+          <!-- cores: earth, neutral, live -->
+          <path d="M114 110 H245 C275 110 275 72 305 72 H335 C365 72 365 110 395 110 H560 C600 110 600 95 630 95" class="wire core w-earth-g"/>
+          <path d="M114 110 H245 C275 110 275 72 305 72 H335 C365 72 365 110 395 110 H560 C600 110 600 95 630 95" class="wire core w-earth-y"/>
+          <path d="M114 120 H560 C600 120 600 130 630 130" class="wire core w-neutral"/>
+          <path d="M114 130 H245 C275 130 275 152 305 152 H335 C365 152 365 130 395 130 H560 C600 130 600 165 630 165" class="wire core w-live"/>
+
+          <!-- pass-through grommets -->
+          <rect x="222" y="98" width="12" height="44" rx="3" class="f-grommet"/>
+          <rect x="412" y="98" width="12" height="44" rx="3" class="f-grommet"/>
+
+          <!-- stripped section notes -->
+          <text x="320" y="42" class="mid sm">sheath removed ~6 cm</text>
+          <text x="320" y="56" class="mid muted sm">cores still insulated</text>
+
+          <!-- CT clamp on live core -->
+          <circle cx="320" cy="152" r="16" class="ct-ring"/>
+          <text x="340" y="196" class="sm b">CT on live</text>
+          <text x="340" y="210" class="sm b">core only</text>
+          <path d="M314 167 V318 H520 V341" class="ct-lead"/>
+          <path d="M326 167 V306 H560 V341" class="ct-lead"/>
+
+          <!-- extension board -->
+          <rect x="560" y="60" width="380" height="155" rx="10" class="f-surface s-ink"/>
+          <text x="576" y="82" class="b">Extension board (opened)</text>
+          <circle cx="640" cy="95" r="10" class="f-surface2" stroke="var(--w-earth-g)" stroke-width="3"/>
+          <text x="640" y="99" class="mid sm b">E</text>
+          <circle cx="640" cy="130" r="10" class="f-surface2" stroke="var(--w-neutral)" stroke-width="3"/>
+          <text x="640" y="134" class="mid sm b">N</text>
+          <circle cx="640" cy="165" r="10" class="f-surface2" stroke="var(--w-live)" stroke-width="3"/>
+          <text x="640" y="169" class="mid sm b">L</text>
+          <text x="640" y="200" class="mid muted sm">socket terminals</text>
+          <!-- sockets -->
+          <rect x="760" y="110" width="60" height="60" rx="10" class="f-surface2 s-line"/>
+          <circle cx="780" cy="152" r="4" class="f-ink"/><circle cx="800" cy="152" r="4" class="f-ink"/><circle cx="790" cy="128" r="5" class="f-ink"/>
+          <rect x="850" y="110" width="60" height="60" rx="10" class="f-surface2 s-line"/>
+          <circle cx="870" cy="152" r="4" class="f-ink"/><circle cx="890" cy="152" r="4" class="f-ink"/><circle cx="880" cy="128" r="5" class="f-ink"/>
+          <!-- bulb load -->
+          <rect x="862" y="134" width="36" height="26" rx="4" class="f-ink"/>
+          <path d="M880 134 V50" class="ct-lead"/>
+          <rect x="873" y="40" width="14" height="10" rx="2" class="f-grommet"/>
+          <circle cx="880" cy="26" r="15" class="f-bulb s-ink"/>
+          <text x="856" y="30" class="end sm">100 W bulb</text>
+
+          <!-- fused tap wires to PZEM -->
+          <path d="M650 130 H720 V341" class="wire tap w-neutral"/>
+          <path d="M650 165 H690 V341" class="wire tap w-live"/>
+          <rect x="680" y="226" width="20" height="38" rx="4" class="f-surface s-ink"/>
+          <line x1="690" y1="232" x2="690" y2="258" stroke="var(--danger)" stroke-width="2"/>
+          <text x="672" y="242" class="end sm b">fuse</text>
+          <text x="672" y="256" class="end sm muted">0.5–1 A</text>
+          <text x="732" y="242" class="sm muted">tap wires</text>
+          <text x="732" y="256" class="sm muted">0.75–1 mm²</text>
+
+          <!-- PZEM board -->
+          <rect x="330" y="330" width="470" height="140" rx="8" class="f-pcb"/>
+          <rect x="500" y="336" width="240" height="26" rx="4" class="f-term"/>
+          <circle cx="520" cy="349" r="8" class="f-screw"/><circle cx="560" cy="349" r="8" class="f-screw"/>
+          <circle cx="690" cy="349" r="8" class="f-screw"/><circle cx="720" cy="349" r="8" class="f-screw"/>
+          <text x="520" y="380" class="mid on-pcb sm">CT</text><text x="560" y="380" class="mid on-pcb sm">CT</text>
+          <text x="690" y="380" class="mid on-pcb sm b">L</text><text x="720" y="380" class="mid on-pcb sm b">N</text>
+          <text x="625" y="430" class="mid on-pcb b">PZEM-004T v3.0</text>
+          <text x="625" y="448" class="mid on-pcb sm">check the labels on your board</text>
+          <line x1="470" y1="338" x2="470" y2="464" class="iso"/>
+          <text transform="translate(486 448) rotate(-90)" class="on-pcb sm">opto-isolation</text>
+          <!-- TTL header -->
+          <rect x="339" y="374" width="12" height="12" class="f-screw"/>
+          <rect x="339" y="394" width="12" height="12" class="f-screw"/>
+          <rect x="339" y="414" width="12" height="12" class="f-screw"/>
+          <rect x="339" y="434" width="12" height="12" class="f-screw"/>
+          <rect x="339" y="454" width="12" height="12" class="f-screw"/>
+          <text x="358" y="384" class="on-pcb sm">5V</text>
+          <text x="358" y="404" class="on-pcb sm">RX</text>
+          <text x="358" y="424" class="on-pcb sm">TX</text>
+          <text x="358" y="444" class="on-pcb sm">CF  (unused)</text>
+          <text x="358" y="464" class="on-pcb sm">GND</text>
+
+          <!-- TTL lead out through grommet to Uno -->
+          <rect x="222" y="370" width="12" height="100" rx="3" class="f-grommet"/>
+          <path d="M194 380 H339" class="wire lv lv-5v"/>
+          <path d="M194 400 H339" class="wire lv lv-rx"/>
+          <path d="M194 420 H339" class="wire lv lv-tx"/>
+          <path d="M194 460 H339" class="wire lv lv-gnd"/>
+
+          <!-- Arduino Uno -->
+          <text x="20" y="345" class="safe sm">LOW VOLTAGE</text>
+          <rect x="20" y="356" width="180" height="124" rx="8" class="f-uno"/>
+          <text x="34" y="380" class="on-uno b">Arduino Uno</text>
+          <circle cx="190" cy="380" r="5" class="f-screw"/><circle cx="190" cy="400" r="5" class="f-screw"/>
+          <circle cx="190" cy="420" r="5" class="f-screw"/><circle cx="190" cy="460" r="5" class="f-screw"/>
+          <text x="178" y="384" class="end on-uno sm">5V</text>
+          <text x="178" y="404" class="end on-uno sm">D11</text>
+          <text x="178" y="424" class="end on-uno sm">D10</text>
+          <text x="178" y="464" class="end on-uno sm">GND</text>
+          <text x="20" y="500" class="muted sm">D1 → level shifter → ESP32</text>
+        </svg>
+      </div>
+      <div class="legend">
+        <span><i class="sw" style="background:var(--w-live)"></i>live (L)</span>
+        <span><i class="sw" style="background:var(--w-neutral)"></i>neutral (N)</span>
+        <span><i class="sw earth"></i>earth (E), not used by PZEM</span>
+        <span><i class="sw" style="background:var(--ct)"></i>CT clamp + leads</span>
+        <span><i class="sw" style="background:var(--grommet)"></i>grommet / cable entry</span>
+        <span><i class="sw zone"></i>mains zone</span>
+      </div>
+      <figcaption>The cord passes through the enclosure, so the stripped section and the CT clamp are inside it. The extension board keeps feeding its sockets as normal; the bulb is plugged into one of them.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Where the CT clamp goes</h2>
+      <p>A current transformer measures the magnetic field of the current passing through it. Live and neutral carry the same current in opposite directions, so it must go around one core only.</p>
+    </div>
+    <figure>
+      <div class="drawing small">
+        <svg viewBox="0 0 640 190" role="img" aria-label="Cable cross-sections. Correct: CT ring around the live core alone. Wrong: CT ring around the whole cable, where live and neutral currents cancel and it reads about zero.">
+          <text x="160" y="26" class="mid safe">✓ Correct</text>
+          <circle cx="130" cy="95" r="13" class="f-live"/><text x="130" y="99" class="mid on-core">L</text>
+          <circle cx="182" cy="80" r="13" class="f-neutral"/><text x="182" y="84" class="mid on-core">N</text>
+          <circle cx="182" cy="112" r="13" class="f-earth" stroke="var(--w-earth-y)" stroke-width="3" stroke-dasharray="5 4"/><text x="182" y="116" class="mid on-core">E</text>
+          <circle cx="130" cy="95" r="25" class="ct-ring"/>
+          <text x="160" y="162" class="mid b">Around the live core alone</text>
+          <text x="160" y="180" class="mid muted sm">reads the load current</text>
+
+          <line x1="320" y1="14" x2="320" y2="182" class="s-line"/>
+
+          <text x="480" y="26" class="mid danger">✗ Wrong</text>
+          <circle cx="480" cy="95" r="34" class="f-sheath"/>
+          <circle cx="466" cy="88" r="11" class="f-live"/><text x="466" y="92" class="mid on-core">L</text>
+          <circle cx="494" cy="88" r="11" class="f-neutral"/><text x="494" y="92" class="mid on-core">N</text>
+          <circle cx="480" cy="112" r="11" class="f-earth" stroke="var(--w-earth-y)" stroke-width="3" stroke-dasharray="5 4"/><text x="480" y="116" class="mid on-core">E</text>
+          <circle cx="480" cy="95" r="44" class="ct-ring"/>
+          <text x="480" y="162" class="mid b">Around the whole cable</text>
+          <text x="480" y="180" class="mid muted sm">L and N cancel: reads ≈ 0 A</text>
+        </svg>
+      </div>
+    </figure>
+  </section>
+
+  <div class="grid2">
+    <section>
+      <div class="section-head">
+        <h2>Identify the cores</h2>
+        <p>India uses two colour schemes. Confirm which core is live with your instructor or a continuity test from the plug pins. Cheap boards are sometimes miswired.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Core</th><th>New (IEC)</th><th>Old</th></tr></thead>
+          <tbody>
+            <tr><td><b>Live · L</b></td><td><span class="chip"><i class="dot" style="background:#8a4b1e"></i>Brown</span></td><td><span class="chip"><i class="dot" style="background:#d62828"></i>Red</span></td></tr>
+            <tr><td><b>Neutral · N</b></td><td><span class="chip"><i class="dot" style="background:#2563eb"></i>Blue</span></td><td><span class="chip"><i class="dot" style="background:#111"></i>Black</span></td></tr>
+            <tr><td><b>Earth · E</b></td><td><span class="chip"><i class="dot" style="background:repeating-linear-gradient(90deg,#16a34a 0 4px,#eab308 4px 8px)"></i>Green/yellow</span></td><td><span class="chip"><i class="dot" style="background:#16a34a"></i>Green</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>TTL lead to the Uno</h2>
+        <p>These are the only wires that leave the enclosure. The PZEM's opto-isolators separate them from mains.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>PZEM pin</th><th>Uno pin</th><th>Wire</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">5V</td><td class="mono">5V</td><td><span class="chip"><i class="sw" style="background:var(--lv-5v)"></i>power</span></td></tr>
+            <tr><td class="mono">RX</td><td class="mono">D11</td><td><span class="chip"><i class="sw" style="background:var(--lv-rx)"></i>Uno → PZEM</span></td></tr>
+            <tr><td class="mono">TX</td><td class="mono">D10</td><td><span class="chip"><i class="sw" style="background:var(--lv-tx)"></i>PZEM → Uno</span></td></tr>
+            <tr><td class="mono">CF</td><td class="muted">—</td><td class="muted">leave unconnected</td></tr>
+            <tr><td class="mono">GND</td><td class="mono">GND</td><td><span class="chip"><i class="sw" style="background:var(--lv-gnd)"></i>ground</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <section>
+    <div class="section-head">
+      <h2>Wiring procedure</h2>
+      <p>Everything unplugged for every step. Tick each step as you finish it; the ticks stay in this browser.</p>
+    </div>
+    <ol class="steps" id="steps">
+      <li><input type="checkbox" id="s1"><label for="s1"><b>Unplug everything and work on the bench.</b><span>Extension board out of the wall, Uno and ESP32 USB cables disconnected.</span></label></li>
+      <li><input type="checkbox" id="s2"><label for="s2"><b>Identify L, N and E.</b><span>Use the colour table, then confirm live with a continuity test from the plug's live pin.</span></label></li>
+      <li><input type="checkbox" id="s3"><label for="s3"><b>Remove about 6 cm of the cord's outer sheath.</b><span>Pick a straight section near the board. Slit lengthwise and peel back. If any inner core's insulation gets nicked, start again on a fresh section.</span></label></li>
+      <li><input type="checkbox" id="s4"><label for="s4"><b>Clamp the CT around the live core only.</b><span>Snap it fully closed until it clicks. A half-closed clamp reads low.</span></label></li>
+      <li><input type="checkbox" id="s5"><label for="s5"><b>Open the extension board and add the tap wires.</b><span>One wire from the socket's L terminal, one from N. Put the fuse holder (0.5–1 A) in the L wire. Leave E alone.</span></label></li>
+      <li><input type="checkbox" id="s6"><label for="s6"><b>Terminate every wire end properly.</b><span>Ferrules or twisted and tinned ends, no copper showing outside a terminal, screws tight. Tug each wire, then cable-tie for strain relief.</span></label></li>
+      <li><input type="checkbox" id="s7"><label for="s7"><b>Mount the PZEM in the enclosure.</b><span>Route the cord through it so the stripped section and CT sit inside. Connect tap wires to the PZEM's L and N, and the CT leads to its CT terminals, following the labels on your board.</span></label></li>
+      <li><input type="checkbox" id="s8"><label for="s8"><b>Run the TTL lead out through a grommet.</b><span>5V, RX, TX, GND to the Uno as in the table. CF stays unconnected.</span></label></li>
+      <li><input type="checkbox" id="s9"><label for="s9"><b>Close the extension board and the enclosure lid.</b><span>Nothing at mains potential may be reachable from outside.</span></label></li>
+      <li><input type="checkbox" id="s10"><label for="s10"><b>Run the multimeter checks below, then get the instructor's sign-off.</b><span>Only then plug in.</span></label></li>
+    </ol>
+    <p class="progress" id="progress" aria-live="polite">0 of 10 steps done</p>
+    <button class="reset" id="reset" type="button">Clear ticks</button>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Checks before plugging in</h2>
+      <p>Multimeter on resistance or continuity. Plug out of the wall, no load plugged into the board, board switch ON.</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Measure between</th><th>Expected</th><th>If not</th></tr></thead>
+        <tbody>
+          <tr><td>Plug pins <b>L – N</b></td><td class="ok">Not near 0 Ω</td><td class="bad">Short circuit. Stop and find it.</td></tr>
+          <tr><td>Plug pins <b>L – E</b> and <b>N – E</b></td><td class="ok">Open (OL)</td><td class="bad">Leak to earth. Stop and find it.</td></tr>
+          <tr><td>Plug <b>L pin</b> → PZEM <b>L</b> screw</td><td class="ok">Continuity (beep)</td><td>Tap wire or fuse not connected.</td></tr>
+          <tr><td>Plug <b>N pin</b> → PZEM <b>N</b> screw</td><td class="ok">Continuity (beep)</td><td>Tap wire not connected.</td></tr>
+          <tr><td>TTL <b>GND</b> wire → any plug pin</td><td class="ok">Open (OL)</td><td class="bad">Low-voltage side touches mains. Stop.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>First power-on</h2>
+      <p>Hands off the enclosure. Watch the Uno's Serial Monitor at 9600 baud, or ask Claude to watch COM10.</p>
+    </div>
+    <div class="grid2">
+      <div style="display:grid; gap:10px; min-width:0">
+        <h3>1 · No load</h3>
+        <p>Plug in with nothing in the sockets. The error frames turn into data frames with voltage and zero current.</p>
+<pre>$E,PZEM_NO_RESPONSE*69      before
+$D,1,229.8,0.000,0.0,0.000,50.0,0.00*..   after</pre>
+      </div>
+      <div style="display:grid; gap:10px; min-width:0">
+        <h3>2 · With the 100 W bulb</h3>
+        <p>Switch the board off, plug in the bulb, switch on. Expect roughly:</p>
+<pre>V  ≈ 230 V     I  ≈ 0.43 A
+P  ≈ 95–100 W  PF ≈ 1.00
+f  ≈ 50.0 Hz</pre>
+      </div>
+    </div>
+    <p class="callout">If current stays at 0 with the bulb on, the CT is around more than one core or not fully closed. <b>Unplug before you touch it.</b></p>
+  </section>
+
+  <footer>Smart Energy Audit · IoT project, Batch 2023–27. This guide covers the measurement wiring only. Your lab's electrical safety rules take precedence over anything here.</footer>
+</div>
+
+<script>
+(() => {
+  const KEY = "pzem-hookup-steps";
+  const boxes = [...document.querySelectorAll("#steps input")];
+  const progress = document.getElementById("progress");
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) { saved = {}; }
+  const update = () => {
+    const done = boxes.filter(b => b.checked).length;
+    progress.textContent = done === boxes.length ? "All 10 steps done. Get the sign-off, then plug in." : `${done} of ${boxes.length} steps done`;
+  };
+  boxes.forEach(b => {
+    b.checked = !!saved[b.id];
+    b.addEventListener("change", () => {
+      saved[b.id] = b.checked;
+      try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) {}
+      update();
+    });
+  });
+  document.getElementById("reset").addEventListener("click", () => {
+    boxes.forEach(b => { b.checked = false; });
+    saved = {};
+    try { localStorage.removeItem(KEY); } catch (e) {}
+    update();
+  });
+  update();
+})();
+</script>
